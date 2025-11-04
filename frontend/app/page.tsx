@@ -67,6 +67,7 @@ import SavingsChart from "@/components/sections/SavingsChart";
 import ContactButton from "@/components/ui/ContactButton";
 import CompanyInfo from "@/components/sections/CompanyInfo";
 import Footer from "@/components/layout/Footer";
+import ContactSection from "@/components/sections/Contact";
 export default function Page() {
   return (
     <main
@@ -90,14 +91,14 @@ export default function Page() {
         <Vision />
       </section>
 
-      <section className="bg-white">
+      <section className="bg-white pt-[clamp(30px,2vw,22px)">
         <Business />
       </section>
 
 
 
-      <section className="bg-white flex justify-center">
-        <ContactButton />
+      <section>
+        <ContactSection />
       </section>
 
 
