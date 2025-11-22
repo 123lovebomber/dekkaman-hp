@@ -1,19 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import liff from "@line/liff";
 
 const liffId = process.env.NEXT_PUBLIC_LINE_LIFF_ROOM_CONTACT_ID;
 
 export default function RoomContactPage() {
-    const searchParams = useSearchParams();
-    const roomId = searchParams.get("room_id") ?? "";
-
+    const [roomId, setRoomId] = useState("");
     const [ready, setReady] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // --- URL から room_id を取得 ---
+        try {
+            const url = new URL(window.location.href);
+            const id = url.searchParams.get("room_id") ?? "";
+            setRoomId(id);
+            console.log("[RoomContact] location.search =", url.search, "room_id =", id);
+        } catch (e) {
+            console.error("[RoomContact] URL parse error", e);
+            setRoomId("");
+        }
+
+        // --- LIFF 初期化 ---
         if (!liffId) {
             setError("LIFF ID が設定されていません。管理者にお問い合わせください。");
             return;
@@ -78,8 +87,7 @@ export default function RoomContactPage() {
                 <p className="text-[11px] text-zinc-500 mb-6 leading-relaxed">
                     下のボタンを押すと、
                     <br />
-                    「物件ID：{roomId || "（不明）"} について問い合わせ希望です。
-                    （初期費用の確認・内見予約・お申し込みの相談をしたいです）」という
+                    「物件ID：{roomId || "（不明）"} について問い合わせ希望です。」という
                     メッセージが弊社公式LINEに送信されます。
                 </p>
 
