@@ -1,24 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import liff from "@line/liff";
-
-type PageProps = {
-    searchParams: {
-        room_id?: string;
-    };
-};
 
 const liffId = process.env.NEXT_PUBLIC_LINE_LIFF_ROOM_CONTACT_ID;
 
-export default function RoomContactPage({ searchParams }: PageProps) {
-    const roomId = searchParams.room_id ?? "";
+export default function RoomContactPage() {
+    const searchParams = useSearchParams();
+    const roomId = searchParams.get("room_id") ?? "";
+
     const [ready, setReady] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!liffId) {
-            setError("LIFF ID が設定されていません。");
+            setError("LIFF ID が設定されていません。管理者にお問い合わせください。");
             return;
         }
 
@@ -28,7 +25,7 @@ export default function RoomContactPage({ searchParams }: PageProps) {
                 setReady(true);
             } catch (e) {
                 console.error("LIFF init error", e);
-                setError("LINE の起動に失敗しました。時間をおいてお試しください。");
+                setError("LINE の起動に失敗しました。時間をおいて再度お試しください。");
             }
         })();
     }, []);
@@ -40,7 +37,7 @@ export default function RoomContactPage({ searchParams }: PageProps) {
         }
 
         try {
-            const text = `物件ID：${roomId} に問い合わせ希望です。`;
+            const text = `物件ID：${roomId} について問い合わせ希望です。（初期費用の確認・内見予約・お申し込みの相談をしたいです）`;
 
             await liff.sendMessages([
                 {
@@ -62,22 +59,28 @@ export default function RoomContactPage({ searchParams }: PageProps) {
                 <h1 className="text-lg font-semibold mb-3">この物件に問い合わせる</h1>
 
                 {roomId ? (
-                    <p className="text-sm text-zinc-800 mb-4">
+                    <p className="text-sm text-zinc-800 mb-3">
                         <span className="font-medium">物件ID：</span>
-                        {roomId} に問い合わせます。
+                        {roomId} についてお問い合わせいただけます。
                     </p>
                 ) : (
-                    <p className="text-sm text-red-600 mb-4">
+                    <p className="text-sm text-red-600 mb-3">
                         物件IDが取得できませんでした。物件ページからアクセスし直してください。
                     </p>
                 )}
 
-                <p className="text-xs text-zinc-600 mb-6 leading-relaxed">
+                <p className="text-xs text-zinc-700 mb-4 leading-relaxed">
+                    初期費用の確認・内見のご予約・お申し込みの手続きについて
+                    <br />
+                    このLINEトークでまとめてご相談いただけます。
+                </p>
+
+                <p className="text-[11px] text-zinc-500 mb-6 leading-relaxed">
                     下のボタンを押すと、
                     <br />
-                    「物件ID：{roomId || "（不明）"} に問い合わせ希望です。」
-                    <br />
-                    というメッセージがLINEトークに送信されます。
+                    「物件ID：{roomId || "（不明）"} について問い合わせ希望です。
+                    （初期費用の確認・内見予約・お申し込みの相談をしたいです）」という
+                    メッセージが弊社公式LINEに送信されます。
                 </p>
 
                 <button
